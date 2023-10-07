@@ -1,0 +1,100 @@
+@import url('normalize.css');
+@import url(//spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css);
+
+#form {
+    position: relative;
+    top:100px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+width: 95%;
+height: 500px;
+box-shadow: 3px 3px 5px 1px gray;
+background: #F2DDFF;
+border-radius: 40px;
+}
+
+/* Rectangle 34 */
+#submit{
+position: absolute;
+width: 100px;
+height: 70px;
+right: 0;
+
+background: #E3B3FF;
+border-radius: 0px 20px 20px 0px;
+}
+
+
+/* 여기 일해봤었는데 일이 편해요! */
+.comment-content{
+    position: absolute;
+    top:20%;
+    height: 20%;
+    width: 80%;
+    padding-left: 20px;
+    text-align: left;
+    font-family: 'Jua', sans-serif;
+    font-weight: 400;
+    font-size: 20px;
+    }
+
+/* rfzz***** */
+.comment-writer{
+position: absolute;
+text-align: right;
+right: 20px;
+bottom: 5px;
+width: 50%;
+height: 27px;
+font-family: 'Jua', sans-serif;
+font-weight: 400;
+font-size: 10px;
+}
+
+/* 등록 */
+#submit{
+position: relative;
+width: 200px;
+height: 90%;
+
+font-family: 'Jua', sans-serif;
+font-weight: 400;
+font-size: 24px;
+}
+
+/* 익명 */
+#checkbox{
+position: relative;
+margin-left: 0px;
+width: auto;
+height: 21px;
+font-family: 'Jua', sans-serif;
+font-weight: 400;
+font-size: 20px;;
+}
+#content{
+position: relative;
+width: 70%;
+height: 95%;
+left:10px;
+background-color:#F2DDFF;
+box-shadow: none;
+border-radius: 40px;
+border: none;
+color: black;
+font-weight: 400;
+font-size: 20px;
+}
+#title{
+    position: relative;
+    width: 70%;
+    height: 95%;
+    left:10px;
+    background-color:#F2DDFF;
+    box-shadow: none;
+    border-radius: 40px;
+    border: none;
+    color: black;
+    font-weight: 400;
+    font-size: 20px;
+    }

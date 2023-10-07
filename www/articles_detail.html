@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+  <style>
+    @import url('//spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css');
+
+    * {
+      font-family: 'Jua', sans-serif;
+      text-decoration: none;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: repeat(1, 1fr);
+      grid-gap: 10px;
+      margin-bottom: 200px;
+    }
+
+    .post {
+      display: flex;
+      flex-direction: column;
+      align-items: left;
+      padding: 10px;
+      background-color: #FFF;
+      color: #000;
+      border-radius: 20px;
+      text-align: left;
+      box-shadow: 3px 3px 5px 1px #E3B3FF;
+      font-family: 'Jua', sans-serif;
+      width: calc(100% - 30px);
+      margin-right: 2px;
+      position: relative; /* 수정된 부분 */
+    }
+    #post-articlede{
+        width: calc(100% - 30px);
+        margin-bottom: 30px;
+    }
+
+    .post h2 {
+      margin-bottom: 5px;
+      font-weight: normal;
+      font-size: 40px;
+    }
+    .post p {
+        font-size: 18px;
+        font-family: sans-serif;
+        font-weight: normal;
+    }
+
+    .post .author {
+      margin-top: 20px; /* 수정된 부분 */
+      position: absolute; /* 수정된 부분 */
+      bottom: 0px; /* 수정된 부분 */
+      font-family: 'Spoqa Han Sans Neo', sans-serif;
+      font-size: 10px;
+    }
+
+    .post .commentCount i {
+      margin-right: 5px;
+    }
+
+    .post .commentCount,
+    .post .time {
+      position: relative;
+      bottom: 0;
+      font-size: 10px;
+      font-family: sans-serif;
+      font-weight: normal;
+    }
+
+    .post .time i {
+      margin-right: 5px;
+    }
+
+    .post .author {
+      right: 10px; /* 수정된 부분 */
+    }
+
+    .post .author i,
+    .post .time i {
+      margin-right: 5px;
+    }
+    .commentIcon{
+        top:0px;
+        padding: 0;
+    }
+    .commentIcon i{
+      margin-right: 5px;
+    }
+
+    #content {
+        position: relative;
+        width: 100%;
+        height: 80%;
+        left: 10px;
+        background-color: #F2DDFF;
+        box-shadow: none;
+        border-radius: 40px;
+        border: none;
+        color: black;
+        font-family: sans-serif;
+        font-weight: normal;
+        font-size: 15px;
+      }
+
+      #form {
+        position: fixed;
+        bottom: 0px;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 90%;
+        height: 30px;
+        border: 1px solid #c1c1c1;
+        /* box-shadow: 3px 3px 5px 1px gray; */
+        box-shadow: none;
+        background: #F2DDFF;
+        border-radius: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 10px;
+      }
+
+      /* 보내기 버튼 */
+      #submit {
+        right:0;
+        width: 50px;
+        height: 90%;
+        background-color: #FFFFFF;
+        color: black;
+        border-radius: 20px;
+        box-shadow: none;
+        border: none;
+        font-family: 'Jua', sans-serif;
+        font-weight: 400;
+        font-size: 20px;
+      }
+
+      /* 익명 */
+      #checkbox-container {
+        position: relative;
+        right: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        z-index: 10;
+      }
+
+      #checkbox {
+        display: none;
+      }
+
+      #checkbox-label {
+        width: 16px;
+        height: 16px;
+        background-color: #F2DDFF;
+        border-radius: 4px;
+        border: 2px solid #9E83E9;
+        display: inline-block;
+        position: relative;
+        cursor: pointer;
+        margin-right: 8px;
+      }
+
+      #checkbox-label::after {
+        content: "";
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 10px;
+        height: 10px;
+        background-color: #9E83E9;
+        border-radius: 2px;
+        opacity: 0;
+        transition: opacity 0.2s;
+      }
+
+      #checkbox:checked + #checkbox-label::after {
+        opacity: 1;
+      }
+
+      #checkbox-text {
+        font-family: sans-serif;
+        font-weight: normal;
+        width:30px;
+        font-size: 15px;
+        color: black;
+      }
+  </style>
+</head>
+<body>
+<go>article_msg</go>
+  <div class="container">
+     <go>comments_msg</go>
+  </div>
+
+
+  <form method="post" action="<go>form_action_url</go>" id="form">
+    <input type="text" name="content" id="content" placeholder="댓글을 입력하세요.">
+    <div id="checkbox-container">
+      <input type="checkbox" name="anonymous" id="checkbox">
+      <label for="checkbox" id="checkbox-label"></label>
+      <span id="checkbox-text">익명</span>
+    </div>
+    <input type="submit" id="submit" value="➤">
+  </form>
+
+  <go>button_msg</go>
+</body>
+</html>

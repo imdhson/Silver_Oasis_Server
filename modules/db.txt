@@ -1,0 +1,24 @@
+go get go.mongodb.org/mongo-driver/mongo
+go get github.com/joho/godotenv
+
+
+db.sessions.insertOne({
+"dj_user_id": ObjectId("6470a02ee03ad12463aff455"),
+"dj_session": "123123key"
+})
+
+필드에 푸시하는 방법:
+db.collection.update(
+   { _id: <document_id> },
+   { $push: { <field>: <value> } }
+)
+
+예를 들어, users 컬렉션에서 _id가 1인 문서의 scores 필드에 80이라는 값을 추가하려면 다음과 같이 입력합니다.
+
+db.users.update(
+   { _id: 1 },
+   { $push: { scores: 80 } }
+)
+
+DB에다 인서트할때 고유아이디는 내가 지정해주는 것이 아님으로 omitempty 옵션을 bson에서 줘야함.
+ID        primitive.ObjectID      `bson:"_id,omitempty"`

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      body {
+        font-family: 'Jua', sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #F2DCFF; /* 변경: 연보라색 배경 */
+      }
+      h2 {
+    text-align: center;
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+  }
+
+  form {
+    max-width: 300px;
+    margin: 0 auto;
+    background-color: #fff;
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border: none; /* 변경: 테두리 제거 */
+    border-bottom: 1px solid #000; /* 변경: 하단 테두리 색상 변경 */
+  }
+
+  label {
+    display: block;
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 10px;
+    font-weight: bold;
+  }
+
+  input[type="email"] {
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+    border: none;
+    border-bottom: 1px solid #000; /* 변경: 하단 테두리 색상 변경 */
+    border-radius: 0;
+    margin-bottom: 10px;
+    outline: none; /* 변경: 키보드 focus 시 효과 제거 */
+  }
+
+  input[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    background-color: #fff; /* 변경: 흰색 배경 */
+    margin-top: 20px;
+    color: #333;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(128, 0, 128, 0.5); /* 변경: 그림자 효과 */
+  }
+
+  input[type="submit"]:hover {
+    background-color:#eee; /* 변경: 마우스 오버 시 배경색 변경 */
+    color: black;
+  }
+
+  /* 반응형 웹 스타일 */
+  @media screen and (max-width: 480px) {
+    form {
+      max-width: 100%;
+    }
+  }
+</style>
+</head>
+<body>
+  <h2>DisJob Login</h2>
+  <form action="/login/auth/id" method="post">
+    <label for="email">E-mail</label>
+    <input type="email" id="email" name="email" value="" autocomplete="off"> <!-- 변경: 키보드 focus 시 자동완성 제거 -->
+    <input type="submit" value="다음">
+  </form>
+</body>
+</html>

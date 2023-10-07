@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>게시판</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+  <style>
+    *{
+      font-family: 'Jua', sans-serif;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: white;
+      margin: 0;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 600px;
+      overflow: hidden;
+      margin: 0 auto;
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    h1 {
+      text-align: center;
+      color: #e4a7fe;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 15px;
+      color: #8e44ad;
+    }
+    
+    input[type="text"],
+    textarea {
+      width: calc(100% - 20px);
+      font-family: sans-serif;
+      overflow: visible;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      resize: none;
+      outline: none;
+    }
+    
+    input[type="checkbox"] {
+      display: none;
+    }
+    
+    .checkbox-custom {
+      position: relative;
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      margin-right: 5px;
+      cursor: pointer;
+    }
+    .checkbox-custom::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 10px;
+      height: 10px;
+      background-color: #8e44ad;
+      border-radius: 2px;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+    }
+    
+    input[type="checkbox"]:checked + .checkbox-custom::before {
+      opacity: 1;
+    }
+    
+    input[type="submit"] {
+      background-color: #e4a7fe;
+      color: #ffffff;
+      width: 50%;
+      left: 50%;
+      transform: translate(50%);
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    
+    @media (max-width: 600px) {
+      body{
+        padding: 0;
+      }
+      .container {
+        padding: 10px;
+        width: 100%;
+      }
+      input[type="submit"] {
+        width: calc(100% - 20px);
+        left: 0;
+        transform: none;
+      }
+      input[type="text"], textarea {
+        width: calc(100% - 40px);
+      }
+    }
+    
+    /* 익명 */
+    #checkbox-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-right: 10px;
+      margin-top: 20px;
+    }
+    
+    #checkbox {
+      display: none;
+    }
+    
+    #checkbox-label {
+      width: 16px;
+      height: 16px;
+      background-color: #F2DDFF;
+      border-radius: 4px;
+      border: 2px solid #9E83E9;
+      display: inline-block;
+      position: relative;
+      cursor: pointer;
+      margin-right: 8px;
+    }
+    
+    #checkbox-label::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 10px;
+      height: 10px;
+      background-color: #9E83E9;
+      border-radius: 2px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    
+    #checkbox:checked + #checkbox-label::after {
+      opacity: 1;
+    }
+    
+    #checkbox-text {
+      position: relative;
+      left: 0;
+      top: -5px;
+      font-family: sans-serif;
+      font-weight: 400;
+      font-size: 15px;
+      color: black;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>글쓰기</h1>
+    <form action="/articles/insert/submit" method="post">
+      <label for="title">제목</label>
+      <input type="text" id="title" name="title" required placeholder="제목...">
+      
+      <div style="margin-top: 20px;"></div> <!-- 추가된 부분: 위에 20px margin -->
+      
+      <label for="content">내용</label>
+      <textarea id="content" name="content" rows="5" required placeholder="내용..."></textarea>
+      
+      <div id="checkbox-container">
+        <input type="checkbox" name="anonymous" id="checkbox">
+        <label for="checkbox" id="checkbox-label"></label>
+        <span id="checkbox-text">익명</span>
+      </div>
+      
+      <input type="submit" value="등록" style="font-size: larger;">
+    </form>
+    <button style="position: fixed; 
+    left: 30px; 
+    bottom: 50px; 
+    font-size: 15px; 
+    background-color: rgb(202, 240, 255); 
+    border-radius: 50%; 
+    box-shadow: 0px 10px 20px rgb(170, 170, 170); 
+    width: 60px; 
+    height: 60px;
+    color: black;
+    border-color: transparent;" 
+onclick="location.href='/articles'">게시판</button>
+
+  </div>
+</body>
+</html>
