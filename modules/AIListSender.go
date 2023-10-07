@@ -16,8 +16,8 @@ import (
 )
 
 const (
-	BATCHSIZE        = 3000
-	OUTPUTSIZE       = 50
+	BATCHSIZE        = 5
+	OUTPUTSIZE       = 5
 	LOC1_MATCH_SCORE = 500
 	LOC2_MATCH_SCORE = 150
 )
@@ -33,7 +33,7 @@ func (a *SO_jobs_detail_s) will_send_append(i SO_jobs_detail, score int) {
 	*a = append(*a, i)
 }
 
-func (a SO_jobs_detail_s) serviceScoreAdd(i_settings Dj_users_users_settings, i_detail SO_jobs_detail) {
+func (a *SO_jobs_detail_s) serviceScoreAdd(i_settings Dj_users_users_settings, i_detail SO_jobs_detail) {
 	err := godotenv.Load()
 	Critical(err)
 	URI := os.Getenv("MONGODB_URI")
@@ -62,6 +62,8 @@ func (a SO_jobs_detail_s) serviceScoreAdd(i_settings Dj_users_users_settings, i_
 	var services_score_board SO_service_type
 	err = collection_SO_services.FindOne(context.TODO(), filter_for_SO_services).Decode(&services_score_board)
 	ErrOK(err)
+	fmt.Println("서비스 스코어 보드 :::::")
+	fmt.Println(services_score_board)
 
 	for service := range SetofServices {
 		//key에 겹치지않은 서비스가 저장되어있음.
@@ -128,24 +130,16 @@ func AIListSender(w http.ResponseWriter, r *http.Request) { //메인화면 시�
 	ErrOK(err)
 	defer cursor_for_SO_list.Close(context.TODO())
 
-	//next 이전에 willsendappend 수행
-	var dbres_SO_Detail_t1 SO_jobs_detail
-	cursor_for_SO_list.Decode(&dbres_SO_Detail_t1)
-	//DEBUG 디버그
-	fmt.Print("디버그 !!!: ")
-	fmt.Println(dbres_SO_Detail_t1)
-	var will_send_ARR SO_jobs_detail_s                                   //willsend 객체 선언
-	will_send_ARR.will_send_append(dbres_SO_Detail_t1, LOC1_MATCH_SCORE) //지역1 매치스코어 만큼 더해지게됨.
-
+	var will_send_ARR SO_jobs_detail_s //willsend 객체 선언
 	//순회하며 배열에 담기 시작
 	now_batch := 0                                //지역 1을 대상으로 순회하며 willsendappend 수행
 	for cursor_for_SO_list.Next(context.TODO()) { //커서next가 성공하면 참
 		if now_batch > BATCHSIZE {
 			break
 		}
-		var dbres_GD_Detail_t2 SO_jobs_detail
-		cursor_for_SO_list.Decode(&dbres_GD_Detail_t2)
-		will_send_ARR.will_send_append(dbres_GD_Detail_t2, LOC1_MATCH_SCORE)
+		var dbres_GD_Detail_t SO_jobs_detail
+		cursor_for_SO_list.Decode(&dbres_GD_Detail_t)
+		will_send_ARR.will_send_append(dbres_GD_Detail_t, LOC1_MATCH_SCORE)
 		now_batch++
 	}
 
@@ -158,19 +152,21 @@ func AIListSender(w http.ResponseWriter, r *http.Request) { //메인화면 시�
 	ErrOK(err)
 	defer cursor_for_SO_list.Close(context.TODO())
 
-	//next 이전에 willsendappend 수행
-	var dbres_SO_Detail_t2 SO_jobs_detail
-	cursor_for_SO_list.Decode(&dbres_SO_Detail_t1)
-	will_send_ARR.will_send_append(dbres_SO_Detail_t2, LOC2_MATCH_SCORE) //지역1 매치스코어 만큼 더해지게됨.
 	//순회하며 배열에 담기 시작
 	for cursor_for_SO_list.Next(context.TODO()) { //커서next가 성공하면 참
 		if now_batch > BATCHSIZE {
 			break
 		}
-		var dbres_GD_Detail_t2 SO_jobs_detail
-		cursor_for_SO_list.Decode(&dbres_GD_Detail_t2)
-		will_send_ARR.will_send_append(dbres_GD_Detail_t2, LOC1_MATCH_SCORE)
+		var dbres_GD_Detail_t SO_jobs_detail
+		cursor_for_SO_list.Decode(&dbres_GD_Detail_t)
+		will_send_ARR.will_send_append(dbres_GD_Detail_t, LOC1_MATCH_SCORE)
 		now_batch++
+	}
+
+	//DEBUG 디버그
+	fmt.Print("디버그 !!!: ")
+	for _, v := range will_send_ARR {
+		fmt.Println(v.AI_List_score)
 	}
 
 	//will_send_ARR 순회하며 scoreADD 호출.
@@ -178,6 +174,13 @@ func AIListSender(w http.ResponseWriter, r *http.Request) { //메인화면 시�
 	for _, v := range will_send_ARR {
 		will_send_ARR.serviceScoreAdd(user_struct.Settings, v)
 	}
+
+	//DEBUG 디버그
+	fmt.Print("디버그2222 !!!: ")
+	for _, v := range will_send_ARR {
+		fmt.Println(v.AI_List_score)
+	}
+
 	//score을 기반으로 sort 시작
 	sort.Sort(sort.Reverse(will_send_ARR))
 	ai_list_num := 0
@@ -199,8 +202,7 @@ func AIListSender(w http.ResponseWriter, r *http.Request) { //메인화면 시�
 		if ir > Outputsize_var {
 			break
 		}
-		tmp_address := strings.Split(vr.Address, " ")
-		tmp_address1 := tmp_address[0] + " " + tmp_address[1]
+		tmp_address1 := vr.Loc_1 + " " + vr.Loc_2
 		tmp := SO_jobs_refined{
 			AI_List_num:    vr.AI_List_num,
 			ID:             vr.ID,
@@ -210,7 +212,6 @@ func AIListSender(w http.ResponseWriter, r *http.Request) { //메인화면 시�
 			Operator:       vr.Operator,
 			ViewCount:      vr.ViewCount,
 		}
-
 		will_send_refined = append(will_send_refined, tmp)
 	}
 
