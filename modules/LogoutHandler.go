@@ -55,7 +55,7 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 		http.SetCookie(w, cookie)
 
 		//db에 세션 클리어
-		coll_dj_session := db.Database("dj_users").Collection("sessions")
+		coll_dj_session := db.Database("gd_users").Collection("sessions")
 		filter := bson.D{{"dj_user_id", user_oid}}
 		result, err := coll_dj_session.DeleteMany(context.TODO(), filter)
 		ErrOK(err)
