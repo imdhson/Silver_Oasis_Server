@@ -16,21 +16,23 @@ import (
 )
 
 const (
-	BATCHSIZE        = 5
-	OUTPUTSIZE       = 5
+	BATCHSIZE        = 100
+	OUTPUTSIZE       = 50
 	LOC1_MATCH_SCORE = 500
 	LOC2_MATCH_SCORE = 150
 )
 
-func (a *SO_jobs_detail_s) will_send_append(i SO_jobs_detail, score int) {
-	for _, v := range *a {
-		if v.ID == i.ID {
-			v.AI_List_score += score
+func (a *SO_jobs_detail_s) will_send_append(i_detail *SO_jobs_detail, score int) {
+	for i, v := range *a {
+		if v.ID == i_detail.ID {
+			fmt.Println("겹쳐서 더함 !!!!!!! ", (*a)[i].AI_List_score, score)
+			(*a)[i].AI_List_score += score
+			fmt.Println("겹쳐서 더한 결과 !!!!!!! ", (*a)[i].AI_List_score)
 			return
 		}
 	}
-	i.AI_List_score += score
-	*a = append(*a, i)
+	(*i_detail).AI_List_score += score
+	*a = append(*a, *i_detail)
 }
 
 func (a *SO_jobs_detail_s) serviceScoreAdd(i_settings Dj_users_users_settings, i_detail SO_jobs_detail) {
@@ -46,37 +48,35 @@ func (a *SO_jobs_detail_s) serviceScoreAdd(i_settings Dj_users_users_settings, i
 		err := db.Disconnect(context.TODO())
 		Critical(err)
 	}()
-
 	// gd_services_score에 맞게 더해야함
 	//더해야할 서비스 score만 남기고 0으로 만들기
 
 	//타입1,2,3 선택한 것에서 중복 제거, map의 키가 겹칠수 없음을 집합처럼 응용
-	var SetofServices map[string]bool
-	SetofServices[i_settings.Service1] = true
-	SetofServices[i_settings.Service2] = true
-	SetofServices[i_settings.Service3] = true
-
+	setofServices := map[string]bool{}
+	setofServices[i_settings.Service1] = true
+	setofServices[i_settings.Service2] = true
+	setofServices[i_settings.Service3] = true
 	//TypeofFacility 가져와서 gd_services_score를 구함
 	collection_SO_services := db.Database("gd_facilities").Collection("gd_services_score")
 	filter_for_SO_services := bson.D{{"시설종류", i_detail.TypeofFacility}}
 	var services_score_board SO_service_type
 	err = collection_SO_services.FindOne(context.TODO(), filter_for_SO_services).Decode(&services_score_board)
 	ErrOK(err)
-	fmt.Println("서비스 스코어 보드 :::::")
+	fmt.Println(setofServices)
 	fmt.Println(services_score_board)
-
-	for service := range SetofServices {
-		//key에 겹치지않은 서비스가 저장되어있음.
+	for service := range setofServices {
+		//service에 겹치지않은 서비스가 저장되어있음.
 		switch service {
 		case "방문서비스":
 			//will_send_append를 이용하여 각 서비스 만큼 스코어를 더하여줌.
-			a.will_send_append(i_detail, services_score_board.VisitService)
+			a.will_send_append(&i_detail, services_score_board.VisitService)
 		case "물품지원":
-			a.will_send_append(i_detail, services_score_board.ObjectSupport)
+			a.will_send_append(&i_detail, services_score_board.ObjectSupport)
 		case "복지서비스":
-			a.will_send_append(i_detail, services_score_board.WelfareService)
+			fmt.Println("asdasdasdasd", services_score_board.WelfareService)
+			a.will_send_append(&i_detail, services_score_board.WelfareService)
 		case "생활지원":
-			a.will_send_append(i_detail, services_score_board.LifeSupport)
+			a.will_send_append(&i_detail, services_score_board.LifeSupport)
 		}
 	}
 }
@@ -139,7 +139,7 @@ func AIListSender(w http.ResponseWriter, r *http.Request) { //메인화면 시�
 		}
 		var dbres_GD_Detail_t SO_jobs_detail
 		cursor_for_SO_list.Decode(&dbres_GD_Detail_t)
-		will_send_ARR.will_send_append(dbres_GD_Detail_t, LOC1_MATCH_SCORE)
+		will_send_ARR.will_send_append(&dbres_GD_Detail_t, LOC1_MATCH_SCORE)
 		now_batch++
 	}
 
@@ -159,14 +159,8 @@ func AIListSender(w http.ResponseWriter, r *http.Request) { //메인화면 시�
 		}
 		var dbres_GD_Detail_t SO_jobs_detail
 		cursor_for_SO_list.Decode(&dbres_GD_Detail_t)
-		will_send_ARR.will_send_append(dbres_GD_Detail_t, LOC1_MATCH_SCORE)
+		will_send_ARR.will_send_append(&dbres_GD_Detail_t, LOC2_MATCH_SCORE)
 		now_batch++
-	}
-
-	//DEBUG 디버그
-	fmt.Print("디버그 !!!: ")
-	for _, v := range will_send_ARR {
-		fmt.Println(v.AI_List_score)
 	}
 
 	//will_send_ARR 순회하며 scoreADD 호출.
@@ -174,12 +168,10 @@ func AIListSender(w http.ResponseWriter, r *http.Request) { //메인화면 시�
 	for _, v := range will_send_ARR {
 		will_send_ARR.serviceScoreAdd(user_struct.Settings, v)
 	}
-
-	//DEBUG 디버그
-	fmt.Print("디버그2222 !!!: ")
-	for _, v := range will_send_ARR {
-		fmt.Println(v.AI_List_score)
-	}
+	// fmt.Print("디버그111111 !!!: ")
+	// for _, v := range will_send_ARR {
+	// 	fmt.Println(v.AI_List_score)
+	// }
 
 	//score을 기반으로 sort 시작
 	sort.Sort(sort.Reverse(will_send_ARR))

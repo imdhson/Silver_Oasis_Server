@@ -39,7 +39,7 @@ func ScrapSender(w http.ResponseWriter, r *http.Request) { //메인화면 시설
 	//user.scrapList 쿼리 시작
 	for _, v := range user_struct.ScrapList {
 		SO_fac_detail_inRange, err := OidTOjobDetail(v)
-		will_send_ARR.will_send_append(SO_fac_detail_inRange, 0)
+		will_send_ARR.will_send_append(&SO_fac_detail_inRange, 0)
 		ErrOK(err)
 	}
 	//scoreADD 수행
