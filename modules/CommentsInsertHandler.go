@@ -41,7 +41,7 @@ func CommentsInsert(w http.ResponseWriter, r *http.Request, urlPath *[]string) {
 		err := db.Disconnect(context.TODO())
 		Critical(err)
 	}()
-	coll := db.Database("dj_board").Collection("comments")
+	coll := db.Database("gd_board").Collection("comments")
 	comments_struct := Dj_board_comments{
 		Djjobsid: ARJB_oid,
 		Djuserid: user_oid,

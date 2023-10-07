@@ -16,10 +16,11 @@ import (
 )
 
 const (
-	BATCHSIZE        = 100
-	OUTPUTSIZE       = 50
-	LOC1_MATCH_SCORE = 500
-	LOC2_MATCH_SCORE = 150
+	BATCHSIZE            = 100
+	OUTPUTSIZE           = 50
+	LOC1_MATCH_SCORE     = 500
+	LOC2_MATCH_SCORE     = 150
+	VIEWCOUNT_RATIOBYONE = 2 // 지역구분1,2가 겹치면  score에 2번 더해짐을 고려해야함.
 )
 
 func (a *SO_jobs_detail_s) will_send_append(i_detail *SO_jobs_detail, score int) {
@@ -140,6 +141,7 @@ func AIListSender(w http.ResponseWriter, r *http.Request) { //메인화면 시�
 		var dbres_GD_Detail_t SO_jobs_detail
 		cursor_for_SO_list.Decode(&dbres_GD_Detail_t)
 		will_send_ARR.will_send_append(&dbres_GD_Detail_t, LOC1_MATCH_SCORE)
+		will_send_ARR[len(will_send_ARR)-1].AI_List_score += dbres_GD_Detail_t.ViewCount * VIEWCOUNT_RATIOBYONE //조회수만큼 점수 더해줌.
 		now_batch++
 	}
 
@@ -160,6 +162,7 @@ func AIListSender(w http.ResponseWriter, r *http.Request) { //메인화면 시�
 		var dbres_GD_Detail_t SO_jobs_detail
 		cursor_for_SO_list.Decode(&dbres_GD_Detail_t)
 		will_send_ARR.will_send_append(&dbres_GD_Detail_t, LOC2_MATCH_SCORE)
+		will_send_ARR[len(will_send_ARR)-1].AI_List_score += dbres_GD_Detail_t.ViewCount * VIEWCOUNT_RATIOBYONE //조회수만큼 점수 더해줌.
 		now_batch++
 	}
 
@@ -176,7 +179,7 @@ func AIListSender(w http.ResponseWriter, r *http.Request) { //메인화면 시�
 	//score을 기반으로 sort 시작
 	sort.Sort(sort.Reverse(will_send_ARR))
 	ai_list_num := 0
-	for numi, _ := range will_send_ARR {
+	for numi := range will_send_ARR {
 		will_send_ARR[numi].AI_List_num = ai_list_num
 		ai_list_num++
 	}

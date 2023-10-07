@@ -37,7 +37,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		err := db.Disconnect(context.TODO())
 		Critical(err)
 	}()
-	coll_dj_registration := db.Database("dj_users").Collection("registration")
+	coll_dj_registration := db.Database("gd_users").Collection("registration")
 	var dbres Dj_users_registration
 	filter_for_key_email_search := bson.D{{"verifyNumber", string(form_key)}}
 	err = coll_dj_registration.FindOne(context.TODO(), filter_for_key_email_search).Decode(&dbres) //key로 email 찾기
@@ -53,13 +53,13 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		LastLogin: time.Now(), ScrapList: []primitive.ObjectID{}, // primitive.NewObjectID 로 나중에 Push 가능
 		Settings: Dj_users_users_settings{},
 	}
-	coll_dj_users := db.Database("dj_users").Collection("users")
+	coll_dj_users := db.Database("gd_users").Collection("users")
 	result, err := coll_dj_users.InsertOne(context.TODO(), users_struct)
 	log.Println(result)
 
 	//사용된 key 삭제
 	filter := bson.D{{"verifyNumber", form_key}}
-	coll_dj_regist := db.Database("dj_users").Collection("registration")
+	coll_dj_regist := db.Database("gd_users").Collection("registration")
 	result_del, err := coll_dj_regist.DeleteMany(context.TODO(), filter)
 	ErrOK(err)
 	log.Println("regist 사용된 키 삭제:", result_del.DeletedCount)

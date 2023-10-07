@@ -23,7 +23,7 @@ func OidTOjobDetail(oid primitive.ObjectID) (SO_jobs_detail, error) {
 		err := db.Disconnect(context.TODO())
 		Critical(err)
 	}()
-	coll := db.Database("dj_jobs").Collection("job_list")
+	coll := db.Database("gd_facilities").Collection("gd_fac_list")
 	var dbres SO_jobs_detail
 	filter := bson.D{{"_id", oid}}
 	err = coll.FindOne(context.TODO(), filter).Decode(&dbres)

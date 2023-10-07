@@ -25,7 +25,7 @@ func RegisterPWrequestHandler(w http.ResponseWriter, r *http.Request, urlPath *[
 		err := db.Disconnect(context.TODO())
 		Critical(err)
 	}()
-	coll := db.Database("dj_users").Collection("registration")
+	coll := db.Database("gd_users").Collection("registration")
 	filter := bson.D{{"email", url_email}}
 	var dbres Dj_users_registration
 	err = coll.FindOne(context.TODO(), filter).Decode(&dbres)

@@ -37,7 +37,7 @@ func ArticlesView(w http.ResponseWriter, r *http.Request) {
 		err := db.Disconnect(context.TODO())
 		Critical(err)
 	}()
-	coll := db.Database("dj_board").Collection("articles")
+	coll := db.Database("gd_board").Collection("articles")
 	opts := options.Find().SetSort(bson.D{{"createAt", -1}})
 	cursor, err := coll.Find(context.TODO(), bson.D{}, opts)
 	ErrOK(err)
@@ -71,7 +71,7 @@ func ArticlesView(w http.ResponseWriter, r *http.Request) {
 		compare_time = strings.ReplaceAll(compare_time, "d", "일")
 
 		//댓글 개수 계산
-		coll_for_commentCount := db.Database("dj_board").Collection("comments")
+		coll_for_commentCount := db.Database("gd_board").Collection("comments")
 		filter_for_commentCount := bson.D{{"dj_jobs_id", v.ID}}
 		commentCount, err := coll_for_commentCount.CountDocuments(context.TODO(), filter_for_commentCount)
 		ErrOK(err)

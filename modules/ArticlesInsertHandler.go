@@ -41,7 +41,7 @@ func ArticlesInsertHandler(w http.ResponseWriter, r *http.Request) {
 		err := db.Disconnect(context.TODO())
 		Critical(err)
 	}()
-	coll := db.Database("dj_board").Collection("articles")
+	coll := db.Database("gd_board").Collection("articles")
 	articles_struct := Dj_board_articles{
 		Djuserid: user_oid,
 		CreateAt: time.Now(),

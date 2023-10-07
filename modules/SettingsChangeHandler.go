@@ -54,7 +54,7 @@ func SettingsChangeHandler(w http.ResponseWriter, r *http.Request) {
 			err := db.Disconnect(context.TODO())
 			Critical(err)
 		}()
-		coll := db.Database("dj_users").Collection("users")
+		coll := db.Database("gd_users").Collection("users")
 
 		filter := bson.D{{"_id", user_oid}}
 		//update := bson.D{{"$set", bson.D{{"settings", bson.D{{"loc", settings_struct.Loc}}, bson.D{{"type", settings_struct.Type}}}}}}

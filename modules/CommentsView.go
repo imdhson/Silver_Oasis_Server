@@ -36,7 +36,7 @@ func CommentsView(w http.ResponseWriter, r *http.Request, urlPath *[]string) {
 		err := db.Disconnect(context.TODO())
 		Critical(err)
 	}()
-	coll := db.Database("dj_board").Collection("comments")
+	coll := db.Database("gd_board").Collection("comments")
 	var will_send []Dj_board_comments
 
 	filter := bson.D{{"dj_jobs_id", ARJB_oid}}

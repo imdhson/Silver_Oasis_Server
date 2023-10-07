@@ -36,7 +36,7 @@ func AuthIDHandler(w http.ResponseWriter, r *http.Request) {
 		Critical(err)
 	}()
 
-	coll := db.Database("dj_users").Collection("users")
+	coll := db.Database("gd_users").Collection("users")
 	filter := bson.D{{"email", form_email}}
 	var dbres Dj_users_users
 	err = coll.FindOne(context.TODO(), filter).Decode(&dbres)
@@ -47,7 +47,7 @@ func AuthIDHandler(w http.ResponseWriter, r *http.Request) {
 
 	if same_mail_not_found_on_users { //같은 이메일 찾지 못하였을 때 - 회원가입 모드
 		//디비 registration에 항목 있는지 확인
-		coll := db.Database("dj_users").Collection("registration")
+		coll := db.Database("gd_users").Collection("registration")
 		filter := bson.D{{"email", form_email}}
 		var dbres_regist Dj_users_registration
 		err = coll.FindOne(context.TODO(), filter).Decode(&dbres_regist)
@@ -68,7 +68,7 @@ func AuthIDHandler(w http.ResponseWriter, r *http.Request) {
 				VerifyNumber: key,
 				CreateAt:     now_time,
 			}
-			coll_dj_regist := db.Database("dj_users").Collection("registration")
+			coll_dj_regist := db.Database("gd_users").Collection("registration")
 			result, err := coll_dj_regist.InsertOne(context.TODO(), regist_struct)
 			ErrOK(err)
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -79,7 +79,7 @@ func AuthIDHandler(w http.ResponseWriter, r *http.Request) {
 
 		} else { //regist에서 같은 이메일이 있을 때 Regist DB에서 삭제
 			filter := bson.D{{"email", form_email}}
-			coll_dj_regist := db.Database("dj_users").Collection("registration")
+			coll_dj_regist := db.Database("gd_users").Collection("registration")
 			result, err := coll_dj_regist.DeleteMany(context.TODO(), filter)
 			ErrOK(err)
 			log.Println("regist에서 겹치는 이메일 삭제", result.DeletedCount)

@@ -36,9 +36,10 @@ type temp_detail struct {
 
 func PrintJobDetail(w http.ResponseWriter, r *http.Request, urlPath *[]string) {
 	oid_hex := (*urlPath)[1]
-	oid, err := primitive.ObjectIDFromHex(oid_hex)
-	ErrOK(err)
+	oid, err_for_SO_Detail := primitive.ObjectIDFromHex(oid_hex)
+	ErrOK(err_for_SO_Detail)
 	so_temp, err := OidTOjobDetail(oid)
+	ErrOK(err)
 	temp := temp_detail{
 		ID:             so_temp.ID,
 		TypeofFacility: so_temp.TypeofFacility,
@@ -75,6 +76,7 @@ func PrintJobDetail(w http.ResponseWriter, r *http.Request, urlPath *[]string) {
 		}()
 		coll_for_scrapCount := db.Database("gd_facilities").Collection("gd_fac_list")
 		filter_for_scrapCount := bson.D{{"_id", sid}}
+
 		update_for_scrapCount := bson.D{
 			{"$inc", bson.D{{"viewCount", 1}}},
 		}
@@ -83,7 +85,7 @@ func PrintJobDetail(w http.ResponseWriter, r *http.Request, urlPath *[]string) {
 
 	}(oid)
 
-	if err != nil { //job을 찾지 못하였을 때
+	if err_for_SO_Detail != nil { //job을 찾지 못하였을 때
 		temp := map[string]string{"시설명": "찾지 못함"}
 		temp2, err := json.MarshalIndent(temp, " ", "	")
 		ErrOK(err)

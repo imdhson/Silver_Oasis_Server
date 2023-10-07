@@ -30,7 +30,7 @@ func AuthPWHandler(w http.ResponseWriter, r *http.Request) {
 		err := db.Disconnect(context.TODO())
 		Critical(err)
 	}()
-	coll := db.Database("dj_users").Collection("users")
+	coll := db.Database("gd_users").Collection("users")
 	encryptedPW := sha512.Sum512([]byte(form_pw)) //비밀 번호 해시 단방향 암호화
 	filter := bson.D{{"email", form_email}, {"password", encryptedPW}}
 	var dbres Dj_users_users
@@ -57,7 +57,7 @@ func AuthPWHandler(w http.ResponseWriter, r *http.Request) {
 		http.SetCookie(w, &cookieid)
 		//db에 세션 클리어
 		filter := bson.D{{"dj_user_id", dbres.ID}}
-		coll_dj_session := db.Database("dj_users").Collection("sessions")
+		coll_dj_session := db.Database("gd_users").Collection("sessions")
 		result, err := coll_dj_session.DeleteMany(context.TODO(), filter)
 		ErrOK(err)
 		log.Println("session이 겹치는 이메일 삭제", result.DeletedCount)
@@ -74,7 +74,7 @@ func AuthPWHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(tmp))
 
 		//users db에 last login 업데이트
-		coll_dj_users := db.Database("dj_users").Collection("users")
+		coll_dj_users := db.Database("gd_users").Collection("users")
 		filter_users := bson.D{{"_id", dbres.ID}}
 		update_users := bson.D{{"$set", bson.D{{"lastLogin", time.Now()}}}}
 		_, err_users := coll_dj_users.UpdateOne(context.TODO(), filter_users, update_users)

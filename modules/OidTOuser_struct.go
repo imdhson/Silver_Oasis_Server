@@ -23,7 +23,7 @@ func OidTOuser_struct(oid primitive.ObjectID) Dj_users_users {
 		err := db.Disconnect(context.TODO())
 		Critical(err)
 	}()
-	coll := db.Database("dj_users").Collection("users")
+	coll := db.Database("gd_users").Collection("users")
 	var dbres Dj_users_users
 	filter := bson.D{{"_id", oid}}
 	err = coll.FindOne(context.TODO(), filter).Decode(&dbres)

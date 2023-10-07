@@ -67,7 +67,7 @@ func CallBard(oid primitive.ObjectID, title string, content string) {
 	}()
 
 	//댓글 등록
-	coll := db.Database("dj_board").Collection("comments")
+	coll := db.Database("gd_board").Collection("comments")
 	comments_struct := Dj_board_comments{
 		Djjobsid: oid,
 		Djuserid: primitive.NilObjectID,

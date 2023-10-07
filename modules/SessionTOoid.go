@@ -25,7 +25,7 @@ func SessionTO_oid(w http.ResponseWriter, r *http.Request) primitive.ObjectID {
 		err := db.Disconnect(context.TODO())
 		Critical(err)
 	}()
-	coll_dj_registration := db.Database("dj_users").Collection("sessions")
+	coll_dj_registration := db.Database("gd_users").Collection("sessions")
 	sessionkey, err := r.Cookie("dj_session") //key to value로 쿠키를 가져옴
 	if err != nil {
 		ErrOK(err)

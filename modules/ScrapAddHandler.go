@@ -52,7 +52,7 @@ func ScrapAddHandler(w http.ResponseWriter, r *http.Request) {
 			err := db.Disconnect(context.TODO())
 			Critical(err)
 		}()
-		coll := db.Database("dj_users").Collection("users")
+		coll := db.Database("gd_users").Collection("users")
 
 		filter := bson.D{{"_id", user_oid}}
 		/*update := bson.D{

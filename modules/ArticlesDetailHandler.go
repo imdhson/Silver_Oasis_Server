@@ -43,7 +43,7 @@ func ArticlesDetailHandler(w http.ResponseWriter, r *http.Request, urlPath *[]st
 		Critical(err)
 	}()
 
-	coll := db.Database("dj_board").Collection("articles")
+	coll := db.Database("gd_board").Collection("articles")
 	var dbres Dj_board_articles
 	url_oid := (*urlPath)[1]
 	oid, err := primitive.ObjectIDFromHex(url_oid)
@@ -72,7 +72,7 @@ func ArticlesDetailHandler(w http.ResponseWriter, r *http.Request, urlPath *[]st
 	compare_time = strings.ReplaceAll(compare_time, "d", "일")
 
 	//댓글 개수 계산
-	coll_for_commentCount := db.Database("dj_board").Collection("comments")
+	coll_for_commentCount := db.Database("gd_board").Collection("comments")
 	filter_for_commentCount := bson.D{{"dj_jobs_id", dbres.ID}}
 	commentCount, err := coll_for_commentCount.CountDocuments(context.TODO(), filter_for_commentCount)
 	ErrOK(err)
@@ -86,7 +86,7 @@ func ArticlesDetailHandler(w http.ResponseWriter, r *http.Request, urlPath *[]st
 	article_msg += `</div>`
 
 	//댓글 쿼리 시작
-	coll_comments := db.Database("dj_board").Collection("comments")
+	coll_comments := db.Database("gd_board").Collection("comments")
 	var comments_struct []Dj_board_comments
 
 	filter := bson.D{{"dj_jobs_id", oid}}
