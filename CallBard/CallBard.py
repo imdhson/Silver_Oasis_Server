@@ -1,7 +1,6 @@
 import bardapi
 from dotenv import load_dotenv
 import os
-import json
 
 load_dotenv(verbose=True)
 token = os.getenv("BARD_API_KEY")

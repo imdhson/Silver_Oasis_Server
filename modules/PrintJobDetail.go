@@ -4,9 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"os"
 
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type temp_detail struct {
@@ -57,12 +61,24 @@ func PrintJobDetail(w http.ResponseWriter, r *http.Request, urlPath *[]string) {
 
 	// fac-list 목록에 viewCount 추가
 	func(sid primitive.ObjectID) {
+		err := godotenv.Load()
+		Critical(err)
+		URI := os.Getenv("MONGODB_URI")
+		if URI == "" {
+			Critical(err)
+		}
+		db, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(URI))
+		Critical(err)
+		defer func() {
+			err := db.Disconnect(context.TODO())
+			Critical(err)
+		}()
 		coll_for_scrapCount := db.Database("gd_facilities").Collection("gd_fac_list")
 		filter_for_scrapCount := bson.D{{"_id", sid}}
 		update_for_scrapCount := bson.D{
 			{"$inc", bson.D{{"viewCount", 1}}},
 		}
-		_, err := coll_for_scrapCount.UpdateOne(context.TODO(), filter_for_scrapCount, update_for_scrapCount)
+		_, err = coll_for_scrapCount.UpdateOne(context.TODO(), filter_for_scrapCount, update_for_scrapCount)
 		ErrOK(err)
 
 	}(oid)
