@@ -71,10 +71,10 @@ func ScrapAddHandler(w http.ResponseWriter, r *http.Request) {
 
 		//직장리스트 목록에 scarpCount 추가
 		func(sid primitive.ObjectID) {
-			coll_for_scrapCount := db.Database("dj_jobs").Collection("job_list")
+			coll_for_scrapCount := db.Database("gd_facilities").Collection("gd_fac_list")
 			filter_for_scrapCount := bson.D{{"_id", sid}}
 			update_for_scrapCount := bson.D{
-				{"$inc", bson.D{{"scrapCount", 1}}},
+				{"$inc", bson.D{{"viewCount", 1}}},
 			}
 			_, err := coll_for_scrapCount.UpdateOne(context.TODO(), filter_for_scrapCount, update_for_scrapCount)
 			ErrOK(err)

@@ -1,61 +1,74 @@
 package modules
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type job_detail struct {
-	ID             primitive.ObjectID `bson:"_id,omitempty" json:"_id"`
-	Duration       string             `bson:"구인신청일자" json:"구인신청일자"`
-	CompanyName    string             `bson:"사업장명" json:"사업장명"`
-	RecuritType    string             `bson:"모집직종" json:"모집직종"`
-	RecuritShape   string             `bson:"고용형태" json:"고용형태"`
-	WageType       string             `bson:"임금형태" json:"임금형태"`
-	Wage           int                `bson:"임금" json:"임금"`
-	ComeType       string             `bson:"입사형태" json:"입사형태"`
-	RequireHistory string             `bson:"요구경력" json:"요구경력"`
-	RequireStudy   string             `bson:"요구학력" json:"요구학력"`
-	RelateMajor    string             `bson:"전공계열" json:"전공계열"`
-	RequireLicense string             `bson:"요구자격증" json:"요구자격증"`
-	Address        string             `bson:"사업장 주소" json:"사업장 주소"`
-	CompanyType    string             `bson:"기업형태" json:"기업형태"`
-	ResponsiveIns  string             `bson:"담당기관" json:"담당기관"`
-	CreateAt       string             `bson:"등록일" json:"등록일"`
-	Contact        string             `bson:"연락처" json:"연락처"`
-	BodySpec       string             `bson:"필수부위" json:"필수부위"`
+type temp_detail struct {
+	ID                  primitive.ObjectID `bson:"_id,omitempty" json:"_id"`
+	TypeofFacility      string             `bson:"시설종류" json:"시설종류"`
+	Loc_1               string             `bson:"지역구분1" json:"지역구분1"`
+	Loc_2               string             `bson:"지역구분2" json:"지역구분2"`
+	NameofFacility      string             `bson:"시설명" json:"시설명"`
+	OwnerofFacility     string             `bson:"시설장명" json:"시설장명"`
+	Max_Cap             int32              `bson:"입소-정원" json:"입소-정원"`
+	Now_Cap             int32              `bson:"현원-계" json:"현원-계"`
+	Now_Cap_Male        int32              `bson:"현원-남" json:"현원-남"`
+	Now_Cap_Female      int32              `bson:"현원-여" json:"현원-여"`
+	Now_Employee        int32              `bson:"종사자-계" json:"종사자-계"`
+	Now_Employee_Male   int32              `bson:"종사자-남" json:"종사자-남"`
+	Now_Employee_Female int32              `bson:"종사자-여" json:"종사자-여"`
+	Address             string             `bson:"소재지" json:"소재지"`
+	Contact             string             `bson:"전화번호" json:"전화번호"`
+	InitialDate         string             `bson:"설치일" json:"설치일"`
+	Operator            string             `bson:"운영주체" json:"운영주체"`
+	ViewCount           int                `bson:"viewCount" json:"viewCount"`
 }
 
 func PrintJobDetail(w http.ResponseWriter, r *http.Request, urlPath *[]string) {
 	oid_hex := (*urlPath)[1]
 	oid, err := primitive.ObjectIDFromHex(oid_hex)
 	ErrOK(err)
-	dj_temp, err := OidTOjobDetail(oid)
-	temp := job_detail{
-		ID:             dj_temp.ID,
-		Duration:       dj_temp.Duration,
-		CompanyName:    dj_temp.CompanyName,
-		RecuritType:    dj_temp.RecuritType,
-		RecuritShape:   dj_temp.RecuritShape,
-		WageType:       dj_temp.WageType,
-		Wage:           dj_temp.Wage,
-		ComeType:       dj_temp.ComeType,
-		RequireHistory: dj_temp.RequireHistory,
-		RequireStudy:   dj_temp.RequireStudy,
-		RelateMajor:    dj_temp.RelateMajor,
-		RequireLicense: dj_temp.RequireLicense,
-		Address:        dj_temp.Address,
-		CompanyType:    dj_temp.CompanyType,
-		ResponsiveIns:  dj_temp.ResponsiveIns,
-		CreateAt:       dj_temp.CreateAt,
-		Contact:        dj_temp.Contact,
-		BodySpec:       dj_temp.BodySpec,
+	so_temp, err := OidTOjobDetail(oid)
+	temp := temp_detail{
+		ID:             so_temp.ID,
+		TypeofFacility: so_temp.TypeofFacility,
+		Loc_1:          so_temp.Loc_1,
+		Loc_2:          so_temp.Loc_2, NameofFacility: so_temp.NameofFacility,
+		OwnerofFacility:     so_temp.OwnerofFacility,
+		Max_Cap:             so_temp.Max_Cap,
+		Now_Cap:             so_temp.Now_Cap,
+		Now_Cap_Male:        so_temp.Now_Cap_Male,
+		Now_Cap_Female:      so_temp.Now_Cap_Female,
+		Now_Employee:        so_temp.Now_Employee,
+		Now_Employee_Male:   so_temp.Now_Cap_Male,
+		Now_Employee_Female: so_temp.Now_Cap_Female,
+		Address:             so_temp.Address,
+		Contact:             so_temp.Contact,
+		InitialDate:         so_temp.InitialDate,
+		Operator:            so_temp.Operator,
+		ViewCount:           so_temp.ViewCount,
 	}
 
+	// fac-list 목록에 viewCount 추가
+	func(sid primitive.ObjectID) {
+		coll_for_scrapCount := db.Database("gd_facilities").Collection("gd_fac_list")
+		filter_for_scrapCount := bson.D{{"_id", sid}}
+		update_for_scrapCount := bson.D{
+			{"$inc", bson.D{{"viewCount", 1}}},
+		}
+		_, err := coll_for_scrapCount.UpdateOne(context.TODO(), filter_for_scrapCount, update_for_scrapCount)
+		ErrOK(err)
+
+	}(oid)
+
 	if err != nil { //job을 찾지 못하였을 때
-		temp := map[string]string{"사업장명": "찾지 못함"}
+		temp := map[string]string{"시설명": "찾지 못함"}
 		temp2, err := json.MarshalIndent(temp, " ", "	")
 		ErrOK(err)
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")

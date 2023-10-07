@@ -11,7 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func OidTOjobDetail(oid primitive.ObjectID) (GD_jobs_detail, error) {
+func OidTOjobDetail(oid primitive.ObjectID) (SO_jobs_detail, error) {
 	err := godotenv.Load()
 	URI := os.Getenv("MONGODB_URI")
 	if URI == "" {
@@ -24,7 +24,7 @@ func OidTOjobDetail(oid primitive.ObjectID) (GD_jobs_detail, error) {
 		Critical(err)
 	}()
 	coll := db.Database("dj_jobs").Collection("job_list")
-	var dbres GD_jobs_detail
+	var dbres SO_jobs_detail
 	filter := bson.D{{"_id", oid}}
 	err = coll.FindOne(context.TODO(), filter).Decode(&dbres)
 	return dbres, err
