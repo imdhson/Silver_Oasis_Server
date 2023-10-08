@@ -3,7 +3,6 @@ package modules
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"os"
 	"sort"
@@ -26,9 +25,7 @@ const (
 func (a *SO_jobs_detail_s) will_send_append(i_detail *SO_jobs_detail, score int) {
 	for i, v := range *a {
 		if v.ID == i_detail.ID {
-			fmt.Println("겹쳐서 더함 !!!!!!! ", (*a)[i].AI_List_score, score)
 			(*a)[i].AI_List_score += score
-			fmt.Println("겹쳐서 더한 결과 !!!!!!! ", (*a)[i].AI_List_score)
 			return
 		}
 	}
@@ -63,8 +60,6 @@ func (a *SO_jobs_detail_s) serviceScoreAdd(i_settings Dj_users_users_settings, i
 	var services_score_board SO_service_type
 	err = collection_SO_services.FindOne(context.TODO(), filter_for_SO_services).Decode(&services_score_board)
 	ErrOK(err)
-	fmt.Println(setofServices)
-	fmt.Println(services_score_board)
 	for service := range setofServices {
 		//service에 겹치지않은 서비스가 저장되어있음.
 		switch service {
@@ -74,7 +69,6 @@ func (a *SO_jobs_detail_s) serviceScoreAdd(i_settings Dj_users_users_settings, i
 		case "물품지원":
 			a.will_send_append(&i_detail, services_score_board.ObjectSupport)
 		case "복지서비스":
-			fmt.Println("asdasdasdasd", services_score_board.WelfareService)
 			a.will_send_append(&i_detail, services_score_board.WelfareService)
 		case "생활지원":
 			a.will_send_append(&i_detail, services_score_board.LifeSupport)
@@ -171,10 +165,6 @@ func AIListSender(w http.ResponseWriter, r *http.Request) { //메인화면 시�
 	for _, v := range will_send_ARR {
 		will_send_ARR.serviceScoreAdd(user_struct.Settings, v)
 	}
-	// fmt.Print("디버그111111 !!!: ")
-	// for _, v := range will_send_ARR {
-	// 	fmt.Println(v.AI_List_score)
-	// }
 
 	//score을 기반으로 sort 시작
 	sort.Sort(sort.Reverse(will_send_ARR))

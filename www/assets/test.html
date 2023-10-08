@@ -122,9 +122,9 @@
       // JSON 데이터 생성
       var data = {
         loc: document.getElementById("loc").value,
-        type1: document.getElementById("type1").value,
-        type2: document.getElementById("type2").value,
-        type3: document.getElementById("type3").value,
+        service1: document.getElementById("service1").value,
+        service2: document.getElementById("service2").value,
+        service3: document.getElementById("service3").value,
       };
 
       // POST 요청 보내기
@@ -239,9 +239,9 @@
   </div></div>
   <div class="section">
     <input type="text" id="loc" name="loc" placeholder="loc">
-    <input type="text" id="type1" name="type1" placeholder="type1">
-    <input type="text" id="type2" name="type2" placeholder="type2">
-    <input type="text" id="type3" name="type3" placeholder="type3">
+    <input type="text" id="service1" name="service1" placeholder="service1">
+    <input type="text" id="service2" name="service2" placeholder="service2">
+    <input type="text" id="service3" name="service3" placeholder="service3">
     <button onclick="sendPostRequest()">수정</button><br>
   </div>
   
