@@ -1,4 +1,4 @@
-import bardapi
+from bardapi import Bard
 from dotenv import load_dotenv
 import os
 
@@ -7,8 +7,8 @@ token = os.getenv("BARD_API_KEY")
 
 with open("CallBard/input.txt", "r") as f:
     input_text = f.read()
-
-response = bardapi.core.Bard(token).get_answer(input_text)['content']
+bard = Bard(token = token)
+response = bard.get_answer(input_text)['content']
 
 with open("CallBard/output.txt", "w") as f:
     f.writelines(response)
