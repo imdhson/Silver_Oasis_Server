@@ -15,8 +15,8 @@ import (
 )
 
 const (
-	BATCHSIZE            = 2000
-	OUTPUTSIZE           = 50
+	BATCHSIZE            = 100
+	OUTPUTSIZE           = 30
 	LOC1_MATCH_SCORE     = 500
 	LOC2_MATCH_SCORE     = 150
 	VIEWCOUNT_RATIOBYONE = 2 // 지역구분1,2가 겹치면  score에 2번 더해짐을 고려해야함.
@@ -34,8 +34,6 @@ func (a *SO_jobs_detail_s) will_send_append(i_detail *SO_jobs_detail, score int)
 }
 
 func (a *SO_jobs_detail_s) serviceScoreAdd(i_settings Dj_users_users_settings, i_detail SO_jobs_detail) {
-	//init으로 services_score_board 를 가져오게됨 .
-
 	err := godotenv.Load()
 	Critical(err)
 	URI := os.Getenv("MONGODB_URI")
@@ -144,6 +142,7 @@ func AIListSender(w http.ResponseWriter, r *http.Request) { //메인화면 시�
 	//splited[1] = loc2 인 경우를 cursor.next형 탐색
 	filter_for_SO_list = bson.D{
 		{"$and", bson.A{
+			bson.D{{"지역구분1", bson.D{{"$regex", filter_loc_0}}}},
 			bson.D{{"지역구분2", bson.D{{"$regex", filter_loc_1}}}},
 		}}}
 	cursor_for_SO_list, err = collection_SO_list.Find(context.TODO(), filter_for_SO_list)
