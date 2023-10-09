@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	BATCHSIZE            = 100
+	BATCHSIZE            = 2000
 	OUTPUTSIZE           = 50
 	LOC1_MATCH_SCORE     = 500
 	LOC2_MATCH_SCORE     = 150
@@ -34,6 +34,8 @@ func (a *SO_jobs_detail_s) will_send_append(i_detail *SO_jobs_detail, score int)
 }
 
 func (a *SO_jobs_detail_s) serviceScoreAdd(i_settings Dj_users_users_settings, i_detail SO_jobs_detail) {
+	//init으로 services_score_board 를 가져오게됨 .
+
 	err := godotenv.Load()
 	Critical(err)
 	URI := os.Getenv("MONGODB_URI")
@@ -168,11 +170,6 @@ func AIListSender(w http.ResponseWriter, r *http.Request) { //메인화면 시�
 
 	//score을 기반으로 sort 시작
 	sort.Sort(sort.Reverse(will_send_ARR))
-	ai_list_num := 0
-	for numi := range will_send_ARR {
-		will_send_ARR[numi].AI_List_num = ai_list_num
-		ai_list_num++
-	}
 
 	var Outputsize_var int               //결과 슬라이싱시 인덱스 바깥으로 튀는것 방지하기 위함
 	if len(will_send_ARR) < OUTPUTSIZE { //결과 슬라이싱시 인덱스 바깥으로 튀는것 방지하기 위함
@@ -199,7 +196,11 @@ func AIListSender(w http.ResponseWriter, r *http.Request) { //메인화면 시�
 		}
 		will_send_refined = append(will_send_refined, tmp)
 	}
-
+	ai_list_num := 0
+	for numi := range will_send_refined {
+		will_send_refined[numi].AI_List_num = ai_list_num
+		ai_list_num++
+	}
 	will_send_json, _ := json.MarshalIndent(will_send_refined, " ", "	")
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
