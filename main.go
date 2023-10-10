@@ -99,8 +99,6 @@ func urlHandler(w http.ResponseWriter, r *http.Request) {
 		modules.PrintJobDetail(w, r, &urlPath)
 	case "ailist":
 		modules.AIListSender(w, r)
-	case "sessiontest":
-		modules.PrintSession_TestOnly(w, r)
 	case "session":
 		modules.PrintSession(w, r)
 	default:
