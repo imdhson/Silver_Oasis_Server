@@ -3,6 +3,7 @@ package modules
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"os"
 	"sort"
@@ -10,12 +11,13 @@ import (
 
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 const (
-	BATCHSIZE            = 200
+	BATCHSIZE_FOR_AILIST = 100
 	OUTPUTSIZE           = 30
 	LOC1_MATCH_SCORE     = 500
 	LOC2_MATCH_SCORE     = 150
@@ -23,14 +25,23 @@ const (
 )
 
 func (a *SO_jobs_detail_s) will_send_append(i_detail *SO_jobs_detail, score int) {
+	var now_index uint8
 	for i, v := range *a {
-		if v.ID == i_detail.ID {
+		if v.ID == (*i_detail).ID {
+			fmt.Println("겹침!!!!!------")
 			(*a)[i].AI_List_score += score
 			return
+		} else if i+1 >= BATCHSIZE_FOR_AILIST {
+			//isFull 추가해서 성능이슈 해결
+			return
+		} else if v.ID == primitive.NilObjectID {
+			now_index = uint8(i)
+			break
 		}
 	}
-	(*i_detail).AI_List_score += score
-	*a = append(*a, *i_detail)
+	fmt.Println(now_index)
+	i_detail.AI_List_score += score
+	(*a)[now_index] = *i_detail //버그 있는 곳
 }
 
 func (a *SO_jobs_detail_s) serviceScoreAdd(i_settings Dj_users_users_settings, i_detail SO_jobs_detail) {
@@ -112,51 +123,49 @@ func AIListSender(w http.ResponseWriter, r *http.Request) { //메인화면 시�
 		filter_loc_1 = splited_loc[1]
 	}
 
-	// 시설목록가져와서 시설종류-weightDB에서 선택된 서비스만 +=score
-	// 그리고 splited_loc[0] 과 [1]에 각각 포함되어있는지 확인해서 +=score
-
-	//filterloc[0] = loc1 인 경우를 cursor.next형 탐색
+	//splited[0] and splited[1] = loc 1 and loc2 인 경우를 cursor.next형 탐색
 	collection_SO_list := db.Database("gd_facilities").Collection("gd_fac_list")
 	filter_for_SO_list := bson.D{
 		{"$and", bson.A{
 			bson.D{{"지역구분1", bson.D{{"$regex", filter_loc_0}}}},
+			bson.D{{"지역구분2", bson.D{{"$regex", filter_loc_1}}}},
 		}}}
 	cursor_for_SO_list, err := collection_SO_list.Find(context.TODO(), filter_for_SO_list)
 	ErrOK(err)
 	defer cursor_for_SO_list.Close(context.TODO())
 
+	now_batch := 0
 	var will_send_ARR SO_jobs_detail_s //willsend 객체 선언
-	//순회하며 배열에 담기 시작
-	now_batch := 0                                //지역 1을 대상으로 순회하며 willsendappend 수행
-	for cursor_for_SO_list.Next(context.TODO()) { //커서next가 성공하면 참
-		if now_batch > BATCHSIZE {
-			break
-		}
-		var dbres_GD_Detail_t SO_jobs_detail
-		cursor_for_SO_list.Decode(&dbres_GD_Detail_t)
-		will_send_ARR.will_send_append(&dbres_GD_Detail_t, LOC1_MATCH_SCORE)
-		will_send_ARR[len(will_send_ARR)-1].AI_List_score += dbres_GD_Detail_t.ViewCount * VIEWCOUNT_RATIOBYONE //조회수만큼 점수 더해줌.
-		now_batch++
-	}
-
-	//splited[1] = loc2 인 경우를 cursor.next형 탐색
-	filter_for_SO_list = bson.D{
-		{"$and", bson.A{
-			bson.D{{"지역구분1", bson.D{{"$regex", filter_loc_0}}}},
-			bson.D{{"지역구분2", bson.D{{"$regex", filter_loc_1}}}},
-		}}}
-	cursor_for_SO_list, err = collection_SO_list.Find(context.TODO(), filter_for_SO_list)
-	ErrOK(err)
-	defer cursor_for_SO_list.Close(context.TODO())
 
 	//순회하며 배열에 담기 시작
 	for cursor_for_SO_list.Next(context.TODO()) { //커서next가 성공하면 참
-		if now_batch > BATCHSIZE {
+		if now_batch > BATCHSIZE_FOR_AILIST {
 			break
 		}
 		var dbres_GD_Detail_t SO_jobs_detail
 		cursor_for_SO_list.Decode(&dbres_GD_Detail_t)
 		will_send_ARR.will_send_append(&dbres_GD_Detail_t, LOC2_MATCH_SCORE)
+		will_send_ARR[len(will_send_ARR)-1].AI_List_score += dbres_GD_Detail_t.ViewCount * VIEWCOUNT_RATIOBYONE //조회수만큼 점수 더해줌.
+		now_batch++
+	}
+
+	//filterloc[0] = loc1 인 경우를 cursor.next형 탐색
+	filter_for_SO_list = bson.D{
+		{"$and", bson.A{
+			bson.D{{"지역구분1", bson.D{{"$regex", filter_loc_0}}}},
+		}}}
+	cursor_for_SO_list, err = collection_SO_list.Find(context.TODO(), filter_for_SO_list)
+	//ErrOK(err)
+	defer cursor_for_SO_list.Close(context.TODO())
+
+	//순회하며 배열에 담기 시작
+	for cursor_for_SO_list.Next(context.TODO()) { //커서next가 성공하면 참
+		if now_batch > BATCHSIZE_FOR_AILIST {
+			break
+		}
+		var dbres_GD_Detail_t SO_jobs_detail
+		cursor_for_SO_list.Decode(&dbres_GD_Detail_t)
+		will_send_ARR.will_send_append(&dbres_GD_Detail_t, LOC1_MATCH_SCORE)
 		will_send_ARR[len(will_send_ARR)-1].AI_List_score += dbres_GD_Detail_t.ViewCount * VIEWCOUNT_RATIOBYONE //조회수만큼 점수 더해줌.
 		now_batch++
 	}
@@ -200,6 +209,7 @@ func AIListSender(w http.ResponseWriter, r *http.Request) { //메인화면 시�
 		will_send_refined[numi].AI_List_num = ai_list_num
 		ai_list_num++
 	}
+
 	will_send_json, _ := json.MarshalIndent(will_send_refined, " ", "	")
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)

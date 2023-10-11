@@ -69,7 +69,7 @@ type SO_jobs_refined struct {
 	ViewCount      int                `bson:"viewCount" json:"viewCount"`
 }
 
-type SO_jobs_detail_s []SO_jobs_detail
+type SO_jobs_detail_s [BATCHSIZE_FOR_AILIST]SO_jobs_detail
 
 func (a SO_jobs_detail_s) Len() int {
 	return len(a)
