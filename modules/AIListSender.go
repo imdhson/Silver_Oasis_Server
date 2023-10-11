@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	BATCHSIZE            = 100
+	BATCHSIZE            = 200
 	OUTPUTSIZE           = 30
 	LOC1_MATCH_SCORE     = 500
 	LOC2_MATCH_SCORE     = 150
