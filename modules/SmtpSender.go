@@ -16,9 +16,9 @@ func SmtpSender(to_mail string, register bool) string { //register: true인 경�
 	auth := smtp.PlainAuth("", "disjob", smtppassword, "smtp.naver.com")
 	var mail_subject, mail_content, verify_num string
 	if register {
-		mail_subject = "DisJob 회원가입 인증번호"
+		mail_subject = "Silver Oasis 회원가입 인증번호"
 		verify_num = strconv.Itoa(int(rand.Intn(100000)))
-		mail_content = "DisJob 회원가입 인증번호: " + verify_num + "\r\n" +
+		mail_content = "Silver Oasis 회원가입 인증번호: " + verify_num + "\r\n" +
 			"https://pi.imdhson.com/r/" + to_mail + "/" + verify_num + ""
 		//http://.com/login/auth/email/mail@imdhson.com/123123321 이런식으로 가게됨
 	} else {
