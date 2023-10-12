@@ -3,7 +3,6 @@ package modules
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"os"
 	"sort"
@@ -28,7 +27,6 @@ func (a *SO_jobs_detail_s) will_send_append(i_detail *SO_jobs_detail, score int)
 	var now_index uint8
 	for i, v := range *a {
 		if v.ID == (*i_detail).ID {
-			fmt.Println("겹침!!!!!------")
 			(*a)[i].AI_List_score += score
 			return
 		} else if i+1 >= BATCHSIZE_FOR_AILIST {
@@ -39,7 +37,6 @@ func (a *SO_jobs_detail_s) will_send_append(i_detail *SO_jobs_detail, score int)
 			break
 		}
 	}
-	fmt.Println(now_index)
 	i_detail.AI_List_score += score
 	(*a)[now_index] = *i_detail //버그 있는 곳
 }
