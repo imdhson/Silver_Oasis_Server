@@ -12,5 +12,8 @@ systemctl 사용시 위의 것을 sudo 로 설치해야함 <br>
  MongoDB서버, smpt서버 Password, BardAPI key 를 넣어야 동작함.
  <br>sslforfree 폴더에 (본 디렉터리 하위에 없으면 생성해야함)
  <br> https://blog.naver.com/imdhson/223142347090 (손동휘 작성 블로그 글)<br>
- 참조하여 ca_bundle.crt, certificate.crt, private.key 를 넣어야 함.
+ 참조하여 ca_bundle.crt, certificate.crt(combined.crt), private.key 를 넣어야 함.
 
+
+<br> mongoDB 관련<br>
+dump 를 mongodb의 mongorestore 명령어를 이용하여 사용하고자 하는 MongoDB서버에 restore하면 시연과 같은 효과를 볼 수 있음. 단, 데이터셋의 출처를 명시해야함.(보건복지부) 
